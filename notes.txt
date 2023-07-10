@@ -1,0 +1,8 @@
+NOT IMPLEMENTED / TODO:
+interrupts
+decimal mode
+read_byte / write_byte instead of raw reads and writes
+use ptr_absx_ etc instead of pass-by-value counterparts
+fix const everywhere
+compress instruction implementation as its overly redundant
+X11 memory visualization
