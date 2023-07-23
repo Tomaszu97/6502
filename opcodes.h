@@ -1,5 +1,8 @@
-#ifndef OPCODES
-#define OPCODES
+#ifndef OPCODES_H
+#define OPCODES_H
+
+// invalid
+#define INVALID_   0xFF
 
 // no operation
 #define NOP_       0xEA
@@ -214,4 +217,4 @@
 #define STY_zpx_   0x94
 #define STY_abs_   0x8C
 
-#endif //OPCODES
+#endif //OPCODES_H

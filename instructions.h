@@ -7,24 +7,24 @@
 
 // reference website at http://www.6502.org/tutorials/6502opcodes.html
 
-#define instr_len 1
-#define imm_len   1
-#define immw_len  2
-#define zp_len    1
-#define zpx_len   1
-#define zpy_len   1
-#define rel_len   1
-#define abs_len   2
-#define absx_len  2
-#define absy_len  2
-#define ind_len   2
-#define indx_len  1
-#define ind_y_len 1
+#define instr_len 0x01
+#define imm_len   0x01
+#define immw_len  0x02
+#define zp_len    0x01
+#define zpx_len   0x01
+#define zpy_len   0x01
+#define rel_len   0x01
+#define abs_len   0x02
+#define absx_len  0x02
+#define absy_len  0x02
+#define ind_len   0x02
+#define indx_len  0x01
+#define ind_y_len 0x01
 
 #define DEFINE_2_OPERAND_INSTRUCTION_REGISTER_MODE(instr, oper_reg, mode) \
 void instr##_##mode() \
 { \
-    debug_print("[%02X] "#instr"_"#mode"", instr##_##mode##_); \
+    debug_print("[%02X] "#instr"_"#mode" \t", instr##_##mode##_); \
 \
     const sbyte reg_val = oper_reg;\
     const sbyte cmp_val = mode##_();\
@@ -34,143 +34,143 @@ void instr##_##mode() \
     PC += instr_len + mode##_##len;\
 } \
 
-byte imm_()
+const byte imm_()
 {
-    const byte val = RAM[PC + 1];
+    const byte val = read_byte(PC + 0x01);
     return val;
 }
 
-word immw_()
+const word immw_()
 {
-    const word val = read_word(PC + 1);
+    const word val = read_word(PC + 0x01);
     return val;
 }
 
-byte zp_()
+const byte zp_()
 {
-    const byte zp_addr = RAM[PC + 1];
-    const byte val = RAM[(word)zp_addr];
+    const byte zp_addr = read_byte(PC + 0x01);
+    const byte val = read_byte((word)zp_addr);
     return val;
 }
 
 byte *ptr_zp_()
 {
-    const byte zp_addr = RAM[PC + 1];
+    const byte zp_addr = read_byte(PC + 0x01);
     byte *ptr = &RAM[(word)zp_addr];
     return ptr;
 }
 
-byte zpx_()
+const byte zpx_()
 {
-    const byte zp_addr = RAM[PC + 1] + X;
-    const byte val = RAM[(word)zp_addr];
+    const byte zp_addr = read_byte(PC + 0x01) + X;
+    const byte val = read_byte((word)zp_addr);
     return val;
 }
 
 byte *ptr_zpx_()
 {
-    const byte zp_addr = RAM[PC + 1] + X;
+    const byte zp_addr = read_byte(PC + 0x01) + X;
     byte *ptr = &RAM[(word)zp_addr];
     return ptr;
 }
 
-byte zpy_()
+const byte zpy_()
 {
-    const byte zp_addr = RAM[PC + 1] + Y;
-    const byte val = RAM[(word)zp_addr];
+    const byte zp_addr = read_byte(PC + 0x01) + Y;
+    const byte val = read_byte((word)zp_addr);
     return val;
 }
 
 byte *ptr_zpy_()
 {
-    const byte zp_addr = RAM[PC + 1] + Y;
+    const byte zp_addr = read_byte(PC + 0x01) + Y;
     byte *ptr = &RAM[(word)zp_addr];
     return ptr;
 }
 
-sbyte rel_()
+const sbyte rel_()
 {
-    const sbyte val = RAM[PC + 1];
+    const sbyte val = read_byte(PC + 0x01);
     return val;
 }
 
-byte abs_()
+const byte abs_()
 {
-    const word addr = read_word(PC + 1);
-    const byte val = RAM[addr];
+    const word addr = read_word(PC + 0x01);
+    const byte val = read_byte(addr);
     return val;
 }
 
 byte *ptr_abs_()
 {
-    const word addr = read_word(PC + 1);
+    const word addr = read_word(PC + 0x01);
     byte *ptr = &RAM[(word)addr];
     return ptr;
 }
 
-byte absx_()
+const byte absx_()
 {
-    const word addr = read_word(PC + 1) + X;
-    const byte val = RAM[addr];
+    const word addr = read_word(PC + 0x01) + X;
+    const byte val = read_byte(addr);
     return val;
 }
 
 byte *ptr_absx_()
 {
-    const word addr = read_word(PC + 1) + X;
+    const word addr = read_word(PC + 0x01) + X;
     byte *ptr = &RAM[(word)addr];
     return ptr;
 }
 
-byte absy_()
+const byte absy_()
 {
-    const word addr = read_word(PC + 1) + Y;
-    const byte val = RAM[addr];
+    const word addr = read_word(PC + 0x01) + Y;
+    const byte val = read_byte(addr);
     return val;
 }
 
 byte *ptr_absy_()
 {
-    const word addr = read_word(PC + 1) + Y;
+    const word addr = read_word(PC + 0x01) + Y;
     byte *ptr = &RAM[(word)addr];
     return ptr;
 }
 
-byte ind_()
+const byte ind_()
 {
-    const word addr_addr = read_word(PC + 1);
+    const word addr_addr = read_word(PC + 0x01);
     const word addr = read_word(addr_addr);
-    const byte val = RAM[addr];
+    const byte val = read_byte(addr);
     return val;
 }
 
-byte indx_()
+const byte indx_()
 {
-    const byte addr_zp_addr = RAM[PC + 1] + X;
+    const byte addr_zp_addr = read_byte(PC + 0x01) + X;
     const word addr = read_word(0x0000 + (word)addr_zp_addr);
-    const byte val = RAM[addr];
+    const byte val = read_byte(addr);
     return val;
 }
 
 byte *ptr_indx_()
 {
-    const byte addr_zp_addr = RAM[PC + 1] + X;
+    const byte addr_zp_addr = read_byte(PC + 0x01) + X;
     const word addr = read_word(0x0000 + (word)addr_zp_addr);
     byte *ptr = &RAM[addr];
     return ptr;
 }
 
-byte ind_y_()
+const byte ind_y_()
 {
-    const byte addr_zp_addr = RAM[PC + 1];
+    const byte addr_zp_addr = read_byte(PC + 0x01);
     const word addr = read_word(0x0000 + (word)addr_zp_addr) + Y;
-    const byte val = RAM[addr];
+    const byte val = read_byte(addr);
     return val;
 }
 
 byte *ptr_ind_y_()
 {
-    const byte addr_zp_addr = RAM[PC + 1];
+    const byte addr_zp_addr = read_byte(PC + 0x01);
     const word addr = read_word(0x0000 + (word)addr_zp_addr) + Y;
     byte *ptr = &RAM[addr];
     return ptr;
@@ -178,160 +178,160 @@ byte *ptr_ind_y_()
 
 void NOP()
 {
-    debug_print("[%02X] NOP", NOP_);
+    debug_print("[%02X] NOP \t", NOP_);
     PC += instr_len;
 }
 
 void TXS()
 {
-    debug_print("[%02X] TXS", TXS_);
+    debug_print("[%02X] TXS \t", TXS_);
     SP = X;
     PC += instr_len;
 }
 
 void TSX()
 {
-    debug_print("[%02X] TSX", TSX_);
+    debug_print("[%02X] TSX \t", TSX_);
     X = SP;
     PC += instr_len;
 }
 
 void PHA()
 {
-    debug_print("[%02X] PHA", PHA_);
+    debug_print("[%02X] PHA \t", PHA_);
     push(A);
     PC += instr_len;
 }
 
 void PLA()
 {
-    debug_print("[%02X] PLA", PLA_);
+    debug_print("[%02X] PLA \t", PLA_);
     A = pull();
     PC += instr_len;
 }
 
 void PHP()
 {
-    debug_print("[%02X] PHP", PHP_);
+    debug_print("[%02X] PHP \t", PHP_);
     push(get_PS());
     PC += instr_len;
 }
 
 void PLP()
 {
-    debug_print("[%02X] PLP", PLP_);
+    debug_print("[%02X] PLP \t", PLP_);
     set_PS(pull());
     PC += instr_len;
 }
 
 void TAX()
 {
-    debug_print("[%02X] TAX", TAX_);
+    debug_print("[%02X] TAX \t", TAX_);
     X = A;
     PC += instr_len;
 }
 
 void TXA()
 {
-    debug_print("[%02X] TXA", TXA_);
+    debug_print("[%02X] TXA \t", TXA_);
     A = X;
     PC += instr_len;
 }
 
 void DEX()
 {
-    debug_print("[%02X] DEX", DEX_);
+    debug_print("[%02X] DEX \t", DEX_);
     X -= 1;
     PC += instr_len;
 }
 
 void INX()
 {
-    debug_print("[%02X] INX", INX_);
+    debug_print("[%02X] INX \t", INX_);
     X += 1;
     PC += instr_len;
 }
 
 void TAY()
 {
-    debug_print("[%02X] TAY", TAY_);
+    debug_print("[%02X] TAY \t", TAY_);
     Y = A;
     PC += instr_len;
 }
 
 void TYA()
 {
-    debug_print("[%02X] TYA", TYA_);
+    debug_print("[%02X] TYA \t", TYA_);
     A = Y;
     PC += instr_len;
 }
 
 void DEY()
 {
-    debug_print("[%02X] DEY", DEY_);
+    debug_print("[%02X] DEY \t", DEY_);
     Y -= 1;
     PC += instr_len;
 }
 
 void INY()
 {
-    debug_print("[%02X] INY", INY_);
+    debug_print("[%02X] INY \t", INY_);
     Y += 1;
     PC += instr_len;
 }
 
 void CLC()
 {
-    debug_print("[%02X] CLC", CLC_);
+    debug_print("[%02X] CLC \t", CLC_);
     CF = false;
     PC += instr_len;
 }
 
 void SEC()
 {
-    debug_print("[%02X] SEC", SEC_);
+    debug_print("[%02X] SEC \t", SEC_);
     CF = true;
     PC += instr_len;
 }
 
 void CLI()
 {
-    debug_print("[%02X] CLI", CLI_);
+    debug_print("[%02X] CLI \t", CLI_);
     ID = false;
     PC += instr_len;
 }
 
 void SEI()
 {
-    debug_print("[%02X] SEI", SEI_);
+    debug_print("[%02X] SEI \t", SEI_);
     ID = true;
     PC += instr_len;
 }
 
 void CLV()
 {
-    debug_print("[%02X] CLV", CLV_);
+    debug_print("[%02X] CLV \t", CLV_);
     OVF = false;
     PC += instr_len;
 }
 
 void CLD()
 {
-    debug_print("[%02X] CLD", CLD_);
+    debug_print("[%02X] CLD \t", CLD_);
     DM = false;
     PC += instr_len;
 }
 
 void SED()
 {
-    debug_print("[%02X] SED", SED_);
+    debug_print("[%02X] SED \t", SED_);
     DM = true;
     PC += instr_len;
 }
 
 void BPL()
 {
-    debug_print("[%02X] BPL", BPL_);
+    debug_print("[%02X] BPL \t", BPL_);
     if (NF == false)
         PC += rel_();
     PC += instr_len + rel_len;
@@ -339,7 +339,7 @@ void BPL()
 
 void BMI()
 {
-    debug_print("[%02X] BMI", BMI_);
+    debug_print("[%02X] BMI \t", BMI_);
     if (NF == true)
         PC += rel_();
     PC += instr_len + rel_len;
@@ -347,7 +347,7 @@ void BMI()
 
 void BVC()
 {
-    debug_print("[%02X] BVC", BVC_);
+    debug_print("[%02X] BVC \t", BVC_);
     if (OVF == false)
         PC += rel_();
     PC += instr_len + rel_len;
@@ -355,7 +355,7 @@ void BVC()
 
 void BVS()
 {
-    debug_print("[%02X] BVS", BVS_);
+    debug_print("[%02X] BVS \t", BVS_);
     if (OVF == true)
         PC += rel_();
     PC += instr_len + rel_len;
@@ -363,7 +363,7 @@ void BVS()
 
 void BCC()
 {
-    debug_print("[%02X] BCC", BCC_);
+    debug_print("[%02X] BCC \t", BCC_);
     if (CF == false)
         PC += rel_();
     PC += instr_len + rel_len;
@@ -371,7 +371,7 @@ void BCC()
 
 void BCS()
 {
-    debug_print("[%02X] BCS", BCS_);
+    debug_print("[%02X] BCS \t", BCS_);
     if (CF == true)
         PC += rel_();
     PC += instr_len + rel_len;
@@ -379,7 +379,7 @@ void BCS()
 
 void BNE()
 {
-    debug_print("[%02X] BNE", BNE_);
+    debug_print("[%02X] BNE \t", BNE_);
     if (ZF == false)
         PC += rel_();
     PC += instr_len + rel_len;
@@ -387,7 +387,7 @@ void BNE()
 
 void BEQ()
 {
-    debug_print("[%02X] BEQ", BEQ_);
+    debug_print("[%02X] BEQ \t", BEQ_);
     if (ZF == true)
         PC += rel_();
     PC += instr_len + rel_len;
@@ -448,7 +448,7 @@ DEFINE_2_OPERAND_INSTRUCTION_REGISTER_MODE(BIT, A, abs);
 void JMP_abs()
 {
     const word jmp_addr = immw_();
-    debug_print("[%02X] JMP_abs %04X", JMP_abs_, jmp_addr);
+    debug_print("[%02X] JMP_abs %04X \t", JMP_abs_, jmp_addr);
     PC = jmp_addr;
 }
 
@@ -456,7 +456,7 @@ void JMP_ind()
 {
     const word jmp_addr_addr = immw_();
     const word jmp_addr = read_word(jmp_addr_addr);
-    debug_print("[%02X] JMP_ind (%04X) %04X",
+    debug_print("[%02X] JMP_ind (%04X) %04X \t",
                 JMP_ind_,
                 jmp_addr_addr, 
                 jmp_addr);
@@ -466,7 +466,7 @@ void JMP_ind()
 void JSR()
 {
     const word jmp_addr = immw_();
-    debug_print("[%02X] JSR %04X", JSR_, jmp_addr);
+    debug_print("[%02X] JSR %04X \t", JSR_, jmp_addr);
 
     const word saved_addr = PC + instr_len + immw_len - 1;
     push_word(saved_addr);
@@ -476,7 +476,7 @@ void JSR()
 
 void RTS()
 {
-    debug_print("[%02X] RTS", RTS_);
+    debug_print("[%02X] RTS \t", RTS_);
 
     const word saved_addr = pull_word() + 1;
 
@@ -485,13 +485,13 @@ void RTS()
 
 void BRK()
 {
-    debug_print("[%02X] BRK", BRK_);
+    debug_print("[%02X] BRK \t", BRK_);
     PC += instr_len;
 }
 
 void RTI()
 {
-    debug_print("[%02X] RTI", RTI_);
+    debug_print("[%02X] RTI \t", RTI_);
     PC += instr_len;
 }
 
@@ -587,7 +587,7 @@ DEFINE_2_OPERAND_INSTRUCTION_REGISTER_MODE(EOR, A, ind_y);
 
 void ASL_acc()
 {
-    debug_print("[%02X] ASL_acc", ASL_acc_);
+    debug_print("[%02X] ASL_acc \t", ASL_acc_);
 
     CF = ((A & 0x80) != 0);
     A <<= 0x01;
@@ -599,7 +599,7 @@ void ASL_acc()
 
 void ASL_zp()
 {
-    debug_print("[%02X] ASL_zp", ASL_zp_);
+    debug_print("[%02X] ASL_zp \t", ASL_zp_);
 
     byte *ptr = ptr_zp_();
     CF = ((*ptr & 0x80) != 0);
@@ -612,7 +612,7 @@ void ASL_zp()
 
 void ASL_zpx()
 {
-    debug_print("[%02X] ASL_zpx", ASL_zpx_);
+    debug_print("[%02X] ASL_zpx \t", ASL_zpx_);
 
     byte *ptr = ptr_zpx_();
     CF = ((*ptr & 0x80) != 0);
@@ -625,7 +625,7 @@ void ASL_zpx()
 
 void ASL_abs()
 {
-    debug_print("[%02X] ASL_abs", ASL_abs_);
+    debug_print("[%02X] ASL_abs \t", ASL_abs_);
 
     byte *ptr = ptr_abs_();
     CF = ((*ptr & 0x80) != 0);
@@ -638,7 +638,7 @@ void ASL_abs()
 
 void ASL_absx()
 {
-    debug_print("[%02X] ASL_absx", ASL_absx_);
+    debug_print("[%02X] ASL_absx \t", ASL_absx_);
 
     byte *ptr = ptr_absx_();
     CF = ((*ptr & 0x80) != 0);
@@ -651,7 +651,7 @@ void ASL_absx()
 
 void LSR_acc()
 {
-    debug_print("[%02X] LSR_acc", LSR_acc_);
+    debug_print("[%02X] LSR_acc \t", LSR_acc_);
 
     CF = ((A & 0x01) != 0);
     A >>= 0x01;
@@ -664,7 +664,7 @@ void LSR_acc()
 
 void LSR_zp()
 {
-    debug_print("[%02X] LSR_zp", LSR_zp_);
+    debug_print("[%02X] LSR_zp \t", LSR_zp_);
 
     byte *ptr = ptr_zp_();
     CF = ((*ptr & 0x80) != 0);
@@ -678,7 +678,7 @@ void LSR_zp()
 
 void LSR_zpx()
 {
-    debug_print("[%02X] LSR_zpx", LSR_zpx_);
+    debug_print("[%02X] LSR_zpx \t", LSR_zpx_);
 
     byte *ptr = ptr_zpx_();
     CF = ((*ptr & 0x80) != 0);
@@ -692,7 +692,7 @@ void LSR_zpx()
 
 void LSR_abs()
 {
-    debug_print("[%02X] LSR_abs", LSR_abs_);
+    debug_print("[%02X] LSR_abs \t", LSR_abs_);
 
     byte *ptr = ptr_abs_();
     CF = ((*ptr & 0x80) != 0);
@@ -706,7 +706,7 @@ void LSR_abs()
 
 void LSR_absx()
 {
-    debug_print("[%02X] LSR_absx", LSR_absx_);
+    debug_print("[%02X] LSR_absx \t", LSR_absx_);
 
     byte *ptr = ptr_absx_();
     CF = ((*ptr & 0x80) != 0);
@@ -720,7 +720,7 @@ void LSR_absx()
 
 void ROL_acc()
 {
-    debug_print("[%02X] ROL_acc", ROL_acc_);
+    debug_print("[%02X] ROL_acc \t", ROL_acc_);
 
     const bool orig_cf = CF;
     CF = ((A & 0x80) != 0);
@@ -737,7 +737,7 @@ void ROL_acc()
 
 void ROL_zp()
 {
-    debug_print("[%02X] ROL_zp", ROL_zp_);
+    debug_print("[%02X] ROL_zp \t", ROL_zp_);
 
     byte *ptr = ptr_zp_();
     const bool orig_cf = CF;
@@ -755,7 +755,7 @@ void ROL_zp()
 
 void ROL_zpx()
 {
-    debug_print("[%02X] ROL_zpx", ROL_zpx_);
+    debug_print("[%02X] ROL_zpx \t", ROL_zpx_);
 
     byte *ptr = ptr_zpx_();
     const bool orig_cf = CF;
@@ -773,7 +773,7 @@ void ROL_zpx()
 
 void ROL_abs()
 {
-    debug_print("[%02X] ROL_abs", ROL_abs_);
+    debug_print("[%02X] ROL_abs \t", ROL_abs_);
 
     byte *ptr = ptr_abs_();
     const bool orig_cf = CF;
@@ -791,7 +791,7 @@ void ROL_abs()
 
 void ROL_absx()
 {
-    debug_print("[%02X] ROL_absx", ROL_absx_);
+    debug_print("[%02X] ROL_absx \t", ROL_absx_);
 
     byte *ptr = ptr_absx_();
     const bool orig_cf = CF;
@@ -809,7 +809,7 @@ void ROL_absx()
 
 void ROR_acc()
 {
-    debug_print("[%02X] ROR_acc", ROR_acc_);
+    debug_print("[%02X] ROR_acc \t", ROR_acc_);
 
     const bool orig_cf = CF;
     CF = ((A & 0x01) != 0);
@@ -826,7 +826,7 @@ void ROR_acc()
 
 void ROR_zp()
 {
-    debug_print("[%02X] ROR_zp", ROR_zp_);
+    debug_print("[%02X] ROR_zp \t", ROR_zp_);
 
     byte *ptr = ptr_zp_();
     const bool orig_cf = CF;
@@ -844,7 +844,7 @@ void ROR_zp()
 
 void ROR_zpx()
 {
-    debug_print("[%02X] ROR_zpx", ROR_zpx_);
+    debug_print("[%02X] ROR_zpx \t", ROR_zpx_);
 
     byte *ptr = ptr_zpx_();
     const bool orig_cf = CF;
@@ -862,7 +862,7 @@ void ROR_zpx()
 
 void ROR_abs()
 {
-    debug_print("[%02X] ROR_abs", ROR_abs_);
+    debug_print("[%02X] ROR_abs \t", ROR_abs_);
 
     byte *ptr = ptr_abs_();
     const bool orig_cf = CF;
@@ -880,7 +880,7 @@ void ROR_abs()
 
 void ROR_absx()
 {
-    debug_print("[%02X] ROR_absx", ROR_absx_);
+    debug_print("[%02X] ROR_absx \t", ROR_absx_);
 
     byte *ptr = ptr_absx_();
     const bool orig_cf = CF;
@@ -898,7 +898,7 @@ void ROR_absx()
 
 void INC_zp()
 {
-    debug_print("[%02X] INC_zp", INC_zp_);
+    debug_print("[%02X] INC_zp \t", INC_zp_);
 
     byte *ptr = ptr_zp_();
     *ptr += 1;
@@ -910,7 +910,7 @@ void INC_zp()
 
 void INC_zpx()
 {
-    debug_print("[%02X] INC_zpx", INC_zpx_);
+    debug_print("[%02X] INC_zpx \t", INC_zpx_);
 
     byte *ptr = ptr_zpx_();
     *ptr += 1;
@@ -922,7 +922,7 @@ void INC_zpx()
 
 void INC_abs()
 {
-    debug_print("[%02X] INC_abs", INC_abs_);
+    debug_print("[%02X] INC_abs \t", INC_abs_);
 
     byte *ptr = ptr_abs_();
     *ptr += 1;
@@ -934,7 +934,7 @@ void INC_abs()
 
 void INC_absx()
 {
-    debug_print("[%02X] INC_absx", INC_absx_);
+    debug_print("[%02X] INC_absx \t", INC_absx_);
 
     byte *ptr = ptr_absx_();
     *ptr += 1;
@@ -946,7 +946,7 @@ void INC_absx()
 
 void DEC_zp()
 {
-    debug_print("[%02X] DEC_zp", DEC_zp_);
+    debug_print("[%02X] DEC_zp \t", DEC_zp_);
 
     byte *ptr = ptr_zp_();
     *ptr -= 1;
@@ -958,7 +958,7 @@ void DEC_zp()
 
 void DEC_zpx()
 {
-    debug_print("[%02X] DEC_zpx", DEC_zpx_);
+    debug_print("[%02X] DEC_zpx \t", DEC_zpx_);
 
     byte *ptr = ptr_zpx_();
     *ptr -= 1;
@@ -970,7 +970,7 @@ void DEC_zpx()
 
 void DEC_abs()
 {
-    debug_print("[%02X] DEC_abs", DEC_abs_);
+    debug_print("[%02X] DEC_abs \t", DEC_abs_);
 
     byte *ptr = ptr_abs_();
     *ptr -= 1;
@@ -982,7 +982,7 @@ void DEC_abs()
 
 void DEC_absx()
 {
-    debug_print("[%02X] DEC_absx", DEC_absx_);
+    debug_print("[%02X] DEC_absx \t", DEC_absx_);
 
     byte *ptr = ptr_absx_();
     *ptr -= 1;
@@ -994,7 +994,7 @@ void DEC_absx()
 
 void LDX_imm()
 {
-    debug_print("[%02X] LDX_imm", LDX_imm_);
+    debug_print("[%02X] LDX_imm \t", LDX_imm_);
 
     X = imm_();
     ZF = (X == 0);
@@ -1005,7 +1005,7 @@ void LDX_imm()
 
 void LDX_zp()
 {
-    debug_print("[%02X] LDX_zp", LDX_zp_);
+    debug_print("[%02X] LDX_zp \t", LDX_zp_);
 
     X = zp_();
     ZF = (X == 0);
@@ -1016,7 +1016,7 @@ void LDX_zp()
 
 void LDX_zpy()
 {
-    debug_print("[%02X] LDX_zpy", LDX_zpy_);
+    debug_print("[%02X] LDX_zpy \t", LDX_zpy_);
 
     X = zpy_();
     ZF = (X == 0);
@@ -1027,7 +1027,7 @@ void LDX_zpy()
 
 void LDX_abs()
 {
-    debug_print("[%02X] LDX_abs", LDX_abs_);
+    debug_print("[%02X] LDX_abs \t", LDX_abs_);
 
     X = abs_();
     ZF = (X == 0);
@@ -1038,7 +1038,7 @@ void LDX_abs()
 
 void LDX_absy()
 {
-    debug_print("[%02X] LDX_absy", LDX_absy_);
+    debug_print("[%02X] LDX_absy \t", LDX_absy_);
 
     X = absy_();
     ZF = (X == 0);
@@ -1049,7 +1049,7 @@ void LDX_absy()
 
 void LDY_imm()
 {
-    debug_print("[%02X] LDY_imm", LDY_imm_);
+    debug_print("[%02X] LDY_imm \t", LDY_imm_);
 
     Y = imm_();
     ZF = (Y == 0);
@@ -1060,7 +1060,7 @@ void LDY_imm()
 
 void LDY_zp()
 {
-    debug_print("[%02X] LDY_zp", LDY_zp_);
+    debug_print("[%02X] LDY_zp \t", LDY_zp_);
 
     Y = zp_();
     ZF = (Y == 0);
@@ -1071,7 +1071,7 @@ void LDY_zp()
 
 void LDY_zpx()
 {
-    debug_print("[%02X] LDY_zpx", LDY_zpx_);
+    debug_print("[%02X] LDY_zpx \t", LDY_zpx_);
 
     Y = zpx_();
     ZF = (Y == 0);
@@ -1082,7 +1082,7 @@ void LDY_zpx()
 
 void LDY_abs()
 {
-    debug_print("[%02X] LDY_abs", LDY_abs_);
+    debug_print("[%02X] LDY_abs \t", LDY_abs_);
 
     Y = abs_();
     ZF = (Y == 0);
@@ -1093,7 +1093,7 @@ void LDY_abs()
 
 void LDY_absx()
 {
-    debug_print("[%02X] LDY_absx", LDY_absx_);
+    debug_print("[%02X] LDY_absx \t", LDY_absx_);
 
     Y = absx_();
     ZF = (Y == 0);
@@ -1104,7 +1104,7 @@ void LDY_absx()
 
 void LDA_imm()
 {
-    debug_print("[%02X] LDA_imm", LDA_imm_);
+    debug_print("[%02X] LDA_imm \t", LDA_imm_);
 
     A = imm_();
     ZF = (A == 0);
@@ -1115,7 +1115,7 @@ void LDA_imm()
 
 void LDA_zp()
 {
-    debug_print("[%02X] LDA_zp", LDA_zp_);
+    debug_print("[%02X] LDA_zp \t", LDA_zp_);
 
     A = zp_();
     ZF = (A == 0);
@@ -1126,7 +1126,7 @@ void LDA_zp()
 
 void LDA_zpx()
 {
-    debug_print("[%02X] LDA_zpx", LDA_zpx_);
+    debug_print("[%02X] LDA_zpx \t", LDA_zpx_);
 
     A = zpx_();
     ZF = (A == 0);
@@ -1137,7 +1137,7 @@ void LDA_zpx()
 
 void LDA_abs()
 {
-    debug_print("[%02X] LDA_abs", LDA_abs_);
+    debug_print("[%02X] LDA_abs \t", LDA_abs_);
 
     A = abs_();
     ZF = (A == 0);
@@ -1148,7 +1148,7 @@ void LDA_abs()
 
 void LDA_absx()
 {
-    debug_print("[%02X] LDA_absx", LDA_absx_);
+    debug_print("[%02X] LDA_absx \t", LDA_absx_);
 
     A = absx_();
     ZF = (A == 0);
@@ -1159,7 +1159,7 @@ void LDA_absx()
 
 void LDA_absy()
 {
-    debug_print("[%02X] LDA_absy", LDA_absy_);
+    debug_print("[%02X] LDA_absy \t", LDA_absy_);
 
     A = absy_();
     ZF = (A == 0);
@@ -1170,7 +1170,7 @@ void LDA_absy()
 
 void LDA_indx()
 {
-    debug_print("[%02X] LDA_indx", LDA_indx_);
+    debug_print("[%02X] LDA_indx \t", LDA_indx_);
 
     A = indx_();
     ZF = (A == 0);
@@ -1181,7 +1181,7 @@ void LDA_indx()
 
 void LDA_ind_y()
 {
-    debug_print("[%02X] LDA_ind_y", LDA_ind_y_);
+    debug_print("[%02X] LDA_ind_y \t", LDA_ind_y_);
 
     A = ind_y_();
     ZF = (A == 0);
@@ -1192,7 +1192,7 @@ void LDA_ind_y()
 
 void STA_zp()
 {
-    debug_print("[%02X] STA_zp", STA_zp_);
+    debug_print("[%02X] STA_zp \t", STA_zp_);
 
     byte *ptr = ptr_zp_();
     *ptr = A;
@@ -1202,7 +1202,7 @@ void STA_zp()
 
 void STA_zpx()
 {
-    debug_print("[%02X] STA_zpx", STA_zpx_);
+    debug_print("[%02X] STA_zpx \t", STA_zpx_);
 
     byte *ptr = ptr_zpx_();
     *ptr = A;
@@ -1212,7 +1212,7 @@ void STA_zpx()
 
 void STA_abs()
 {
-    debug_print("[%02X] STA_abs", STA_abs_);
+    debug_print("[%02X] STA_abs \t", STA_abs_);
 
     byte *ptr = ptr_abs_();
     *ptr = A;
@@ -1222,7 +1222,7 @@ void STA_abs()
 
 void STA_absx()
 {
-    debug_print("[%02X] STA_absx", STA_absx_);
+    debug_print("[%02X] STA_absx \t", STA_absx_);
 
     byte *ptr = ptr_absx_();
     *ptr = A;
@@ -1232,7 +1232,7 @@ void STA_absx()
 
 void STA_absy()
 {
-    debug_print("[%02X] STA_absy", STA_absy_);
+    debug_print("[%02X] STA_absy \t", STA_absy_);
 
     byte *ptr = ptr_absy_();
     *ptr = A;
@@ -1242,7 +1242,7 @@ void STA_absy()
 
 void STA_indx()
 {
-    debug_print("[%02X] STA_indx", STA_indx_);
+    debug_print("[%02X] STA_indx \t", STA_indx_);
 
     byte *ptr = ptr_indx_();
     *ptr = A;
@@ -1252,7 +1252,7 @@ void STA_indx()
 
 void STA_ind_y()
 {
-    debug_print("[%02X] STA_ind_y", STA_ind_y_);
+    debug_print("[%02X] STA_ind_y \t", STA_ind_y_);
 
     byte *ptr = ptr_ind_y_();
     *ptr = A;
@@ -1262,7 +1262,7 @@ void STA_ind_y()
 
 void STX_zp()
 {
-    debug_print("[%02X] STX_zp", STX_zp_);
+    debug_print("[%02X] STX_zp \t", STX_zp_);
 
     byte *ptr = ptr_zp_();
     *ptr = X;
@@ -1272,7 +1272,7 @@ void STX_zp()
 
 void STX_zpy()
 {
-    debug_print("[%02X] STX_zpy", STX_zpy_);
+    debug_print("[%02X] STX_zpy \t", STX_zpy_);
 
     byte *ptr = ptr_zpy_();
     *ptr = X;
@@ -1282,7 +1282,7 @@ void STX_zpy()
 
 void STX_abs()
 {
-    debug_print("[%02X] STX_abs", STX_abs_);
+    debug_print("[%02X] STX_abs \t", STX_abs_);
 
     byte *ptr = ptr_abs_();
     *ptr = X;
@@ -1292,7 +1292,7 @@ void STX_abs()
 
 void STY_zp()
 {
-    debug_print("[%02X] STY_zp", STY_zp_);
+    debug_print("[%02X] STY_zp \t", STY_zp_);
 
     byte *ptr = ptr_zp_();
     *ptr = Y;
@@ -1302,7 +1302,7 @@ void STY_zp()
 
 void STY_zpx()
 {
-    debug_print("[%02X] STY_zpx", STY_zpx_);
+    debug_print("[%02X] STY_zpx \t", STY_zpx_);
 
     byte *ptr = ptr_zpx_();
     *ptr = Y;
@@ -1312,7 +1312,7 @@ void STY_zpx()
 
 void STY_abs()
 {
-    debug_print("[%02X] STY_abs", STY_abs_);
+    debug_print("[%02X] STY_abs \t", STY_abs_);
 
     byte *ptr = ptr_abs_();
     *ptr = Y;
@@ -1320,4 +1320,4 @@ void STY_abs()
     PC += instr_len + abs_len;
 }
 
-#endif //INSTRUCTIONS
+#endif //INSTRUCTIONS_H

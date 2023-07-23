@@ -9,4 +9,4 @@ typedef int8_t sbyte;
 typedef uint16_t word;
 typedef int16_t sword;
 
-#endif //TYPES
+#endif //TYPES_H

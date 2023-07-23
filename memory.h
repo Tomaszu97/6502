@@ -3,14 +3,26 @@
 
 #include "types.h"
 #include "opcodes.h"
+#include "debug.h"
+#include <errno.h>
+#include <stdio.h>
+
+// cursor
+#define CUR_SET_FMT "\e[<%d>;<%d>H"
+#define CUR_SAVE    "\e[s"
+#define CUR_RESTORE "\e[u"
 
 // random access memory
-byte RAM[65536] = { 0 };
+#define RAM_SIZE 65536
+byte RAM[RAM_SIZE] = { 0 };
 
 // memory location constants
-const word PC_INIT   = 0xFFFC;
-const word SP_BOTTOM = 0x01FF;
-const word SP_TOP    = 0x0100;
+const word PC_INIT             = 0xFFFC;
+const word SP_BOTTOM           = 0x01FF;
+const word SP_TOP              = 0x0100;
+const word MONITOR_BUF         = 0x1000;
+const word MONITOR_BUF_WND_H   = 0x0010;
+const word MONITOR_BUF_WND_W   = 0x0020;
 
 // registers
 word PC  = 0x0000;  // program counter
@@ -34,7 +46,7 @@ void write_byte(const byte byte_,
     RAM[addr] = byte_;
 }
 
-byte read_byte(const word addr)
+const byte read_byte(const word addr)
 {
     return RAM[addr];
 }
@@ -46,7 +58,7 @@ void write_word(const word word_,
     RAM[addr+1] = ((word_ & 0xFF00) >> 8);
 }
 
-word read_word(const word addr)
+const word read_word(const word addr)
 {
     word retval = 0x0000;
     retval |= RAM[addr];
@@ -60,7 +72,7 @@ void push(const byte val)
     RAM[SP_TOP | (word)SP] = val;
 }
 
-byte pull()
+const byte pull()
 {
     const byte val = RAM[SP_TOP | (word)SP];
     SP += 1;
@@ -75,7 +87,7 @@ void push_word(const word val)
     push(l);
 }
 
-word pull_word()
+const word pull_word()
 {
     const byte l = pull();
     const byte h = pull();
@@ -85,7 +97,7 @@ word pull_word()
     return val;
 }
 
-byte get_PS()
+const byte get_PS()
 {
     byte retval = 0x00;
     retval |= (CF ? 0x01 : 0x00)  << 0;
@@ -148,15 +160,29 @@ void init_PC()
     PC = read_word(PC_INIT);
 }
 
-void load_program()
+bool load_program(const char *input_filename)
 {
     debug_print("loading program into RAM\n");
 
-    //RAM[0x0000] = TXS_;
-    //RAM[0x0100 | SP] = TXS_;
-    //RAM[0x0002] = TXS_;
-    //write_word(0x0010, 0x0011);
+    printf("opening input file\n");
+    FILE *input_file = fopen(input_filename, "r");
+    if (errno != 0)
+    {
+        perror("error opening input file");
+        return false;
+    }
 
+    fread(RAM, RAM_SIZE,  1, input_file);
+
+    printf("closing input file\n");
+    fclose(input_file);
+    if (errno != 0)
+    {
+        perror("error closing input file");
+        return false;
+    }
+
+    return true;
 }
 
-#endif //MEMORY
+#endif //MEMORY_H

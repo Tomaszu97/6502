@@ -4,11 +4,12 @@
 #include "debug.h"
 #include "types.h"
 #include "memory.h"
+#include "monitor.h"
 #include "opcodes.h"
 #include "instructions.h"
 #include <unistd.h>
 
-void print_registers()
+void debug_print_registers()
 {
     debug_print("[");
     debug_print("PC:%04X ", PC);
@@ -23,14 +24,13 @@ void print_registers()
     debug_print("BC:%d ", BC);
     debug_print("OVF:%d ", OVF);
     debug_print("NF:%d", NF);
-    debug_print("] ");
+    debug_print("] \n");
 }
 
-bool execute()
+const bool execute()
 {
     bool retcode = true;
 
-    print_registers();
     switch (RAM[PC]) {
         case NOP_:
             NOP();
@@ -486,13 +486,14 @@ bool execute()
             STY_abs();
             break;
         default:
-            debug_print("unknown bytecode %02X", RAM[PC]);
+            debug_print("[%02X] UNKNOWN ", RAM[PC]);
             retcode = false;
             break;
     };
-    debug_print("\n");
+    debug_print_registers();
 
-    usleep(100000);
+    usleep(INSTR_DELAY_US);
+
     return retcode;
 }
 
@@ -505,8 +506,14 @@ void initialize()
 
 void run()
 {
-    while (execute() != false) {}
-    debug_print("execution stopped\n");
+    debug_print("INITIAL STATE\t");
+    debug_print_registers();
+
+    do {
+        draw_monitor();
+    } while (execute() != false);
+
+    print("execution stopped\n");
 }
 
 #endif //CPU_H

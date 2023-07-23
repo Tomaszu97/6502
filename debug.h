@@ -82,4 +82,17 @@ void draw_test_banner()
     print("\n\n");
 }
 
-#endif //DEBUG
+void draw_halfass_banner()
+{
+    print("\n\n");
+    draw_block(0, 0, 128);
+    draw_block(128, 0, 128);
+    draw_block(0, 0, 128);
+    print(" 6502 halfassembler [tomaszu 2023] ");
+    draw_block(0, 0, 128);
+    draw_block(128, 0, 128);
+    draw_block(0, 0, 128);
+    print("\n\n");
+}
+
+#endif //DEBUG_H
