@@ -1,0 +1,39 @@
+# store starting monitor address at zero page address 0x00F0 (word)
+LDA_imm     00
+STA_abs     F0 00
+LDA_imm     10
+STA_abs     F1 00
+
+# store counter at 0x00F2
+LDA_imm     00
+STA_abs     F2 00
+
+# loop1
+LDY_imm     00
+LDA_imm     FF
+
+# loop2
+# get stored address from zp, add Y and under that address (monitor) put 0xFF
+STA_ind_y   F0
+INY
+INY
+INY
+STA_ind_y   F0
+CPY_imm     FF
+BNE         F7
+## loop2
+
+# increment starting monitor address by 0x0100
+LDA_abs     F1 00
+CLC
+ADC_imm     01
+STA_abs     F1 00
+
+# increase and check counter
+INC_zp      F2
+LDA_zp      F2
+CMP_imm     02
+BNE         E0
+## loop1
+
+INVALID

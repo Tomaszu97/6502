@@ -1,0 +1,16 @@
+# example program
+
+LDA_imm     00
+TAX
+INX
+TXA
+CMP_imm     03
+
+# only raw bytes are supported, hence FA == -5
+BNE         FA
+
+# for 2 bytes first put lower than higher byte, with whitespace
+JMP_abs    00 00
+
+# just put an invalid instruction at the end to ensure that execution stops
+INVALID
