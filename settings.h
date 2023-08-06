@@ -1,8 +1,8 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#define INSTR_DELAY_US 0000
-#define MONITOR
+#define INSTR_DELAY_US 100000
+//#define MONITOR
 #define DEBUG
 //#define TEST
 
